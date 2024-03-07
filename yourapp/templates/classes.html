@@ -1,0 +1,78 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="container mt-1">
+    <h2 class="text-center">My Classes</h2>
+    <!-- Table to display classes -->
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Class Name</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for class in classes %}
+            <tr>
+                <th scope="row">{{ loop.index }}</th>
+                <td>{{ class.name }}</td>
+                <td class="text-right">
+                    <!-- Example of action buttons -->
+                    <a href="{{ url_for('classes.start_class', class_id=class.id) }}" class="btn btn-success btn-sm">Start Class</a>
+                    <a href="{{ url_for('classes.export_class_participation', class_id=class.id) }}" class="btn btn-secondary btn-sm" onclick="return confirm('Do you want to export file?');">Export</a>
+                    <a href="{{ url_for('classes.delete_class', class_id=class.id) }}" class="btn btn-danger btn-sm" onclick="return confirm('Data will be deleted permanently. Are you sure?');">Delete</a>
+                </td>
+            </tr>
+            {% else %}
+            <tr class="text-center">
+                <td colspan="3">No classes found. Add a new class below!</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-center">
+        <!-- Trigger Modal Button -->
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addClassModal">
+            Add New Class
+        </button>
+    </div>
+</div>
+
+
+
+<!-- Add New Class Modal -->
+<div class="modal fade" id="addClassModal" tabindex="-1" role="dialog" aria-labelledby="addClassModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addClassModalLabel">Add New Class</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form method="post" enctype="multipart/form-data" action="{{ url_for('classes.classes') }}"> <!-- Adjust the action URL -->
+          <div class="modal-body">
+              <div class="form-group">
+                  <label for="class_name">Class Name</label>
+                  <input type="text" class="form-control" id="class_name" name="class_name" placeholder="Class Name" required>
+              </div>
+              <div class="form-group">
+                  <label for="file">Class List (.CSV & include "name", "id", "group" as headers)</label>
+                  <input type="file" class="form-control-file" id="file" name="file" accept=".csv" required>
+              </div>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Create Class</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

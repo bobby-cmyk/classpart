@@ -1,0 +1,101 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="container mt-1">
+    {% if class_started %}
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>{{ class_name }} currently in progress...</h2>
+        <div>
+            <a href="{{ url_for('classes.end_class') }}" class="btn btn-secondary">End Session</a>
+        </div>
+    </div>
+    <div class="row">
+        {% for group, students in groups.items() %}
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    Group: {{ group }}
+                </div>
+                <ul class="list-group">
+                    {% for student in students %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ student.name }}
+                        <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#participationModal-{{ student.id }}">+</button>
+                    </li>
+
+                    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+                    <!-- Participation Modal -->
+                    <div class="modal fade" id="participationModal-{{ student.id }}" tabindex="-1" role="dialog" aria-labelledby="participationModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="participationModalLabel">Add Participation for {{ student.name }}</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <form class="participation-form" data-student-id="{{ student.id }}">
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            <label for="score">Score (1-10)</label>
+                                            <input type="number" class="form-control" name="score" min="1" max="10" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="remarks">Remarks</label>
+                                            <textarea class="form-control" name="remarks"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-primary">Submit Participation</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% if loop.index0 % 3 == 2 %}
+        </div><div class="row mt-3">
+        {% endif %}
+        {% endfor %}
+    </div>
+
+    {% else %}
+    <h1>Hi, {{ name }}! </h1>
+    <p>Currently no class in session. Start a class <a href="{{ url_for('classes.classes') }}">here</a>!</p>
+    {% endif %}
+</div>
+
+<script>
+    $(document).ready(function() {
+        $('.participation-form').on('submit', function(e) {
+            e.preventDefault(); // Prevent default form submission
+
+            var studentId = $(this).data('student-id');
+            var formData = $(this).serialize(); // Serialize form data
+
+            $.ajax({
+                type: 'POST',
+                url: '/classes/add-participation/' + studentId,
+                data: formData,
+                success: function(response) {
+                    // Handle success
+                    alert('Participation added successfully!');
+                    $('#participationModal-' + studentId).modal('hide'); // Close modal
+                },
+                error: function(error) {
+                    // Handle error
+                    alert('Error adding participation.');
+                }
+            });
+        });
+    });
+</script>
+
+{% endblock %}
+
