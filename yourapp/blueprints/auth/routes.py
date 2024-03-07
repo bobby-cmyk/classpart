@@ -37,20 +37,6 @@ def signup():
         password = request.form['password']
         confirm_password = request.form['confirm_password']
 
-        # Password complexity requirements
-        password_requirements = [
-            (r'.{8,}', 'Password must be at least 8 characters long'),
-            (r'[A-Z]', 'Password must contain at least one uppercase letter'),
-            (r'[a-z]', 'Password must contain at least one lowercase letter'),
-            (r'[0-9]', 'Password must contain at least one digit'),
-            (r'[\W_]', 'Password must contain at least one special character')
-        ]
-
-        for pattern, message in password_requirements:
-            if not re.search(pattern, password):
-                flash(message, 'danger')
-                return redirect(url_for('auth.signup'))
-
         if not username:
             flash('Username cannot be blank', 'danger')
             return redirect(url_for('auth.signup'))
@@ -76,7 +62,7 @@ def signup():
             return redirect(url_for('auth.login'))
         except SQLAlchemyError as e:  # Catching general SQLAlchemy errors
             db.session.rollback()  # Roll back the session to a clean state
-            flash(f'An error occurred while creating your account. Please try again. Error: {str(e)}', 'danger')
+            flash('An error occurred while creating your account. Please try again.', 'danger')
 
     return render_template('signup.html')
 
