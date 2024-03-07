@@ -3,7 +3,6 @@ from flask_login import login_user, logout_user, login_required
 from yourapp.models import db, User
 from werkzeug.security import generate_password_hash
 from sqlalchemy.exc import SQLAlchemyError
-import re
 
 auth_bp = Blueprint('auth', __name__)
 
