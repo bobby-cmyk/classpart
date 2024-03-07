@@ -19,6 +19,7 @@ def create_app(config_class=Config):
     register_error_handlers(app)
 
     with app.app_context():
+        db.create_all()
         from yourapp.blueprints.auth.routes import auth_bp
         from yourapp.blueprints.classes.routes import classes_bp
         from yourapp.blueprints.general.routes import general_bp
